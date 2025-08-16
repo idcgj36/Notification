@@ -1,0 +1,62 @@
+local Zerox = {}
+
+function Zerox.Notify(opts)
+    local Title = opts.Title or "Notification"
+    local Description = opts.Description or "Just A Notification"
+    local Duration = opts.Duration or 5
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "ZeroxNotification"
+    ScreenGui.ResetOnSpawn = false
+    ScreenGui.Parent = game:GetService("CoreGui")
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 350, 0, 100)
+    Frame.Position = UDim2.new(0.5, -175, 0, -120)
+    Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Frame.BorderSizePixel = 0
+    Frame.AnchorPoint = Vector2.new(0.5, 0)
+    Frame.Parent = ScreenGui
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = Frame
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, -20, 0, 30)
+    TitleLabel.Position = UDim2.new(0, 10, 0, 10)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Text = Title
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextSize = 20
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.Parent = Frame
+
+    local DescLabel = Instance.new("TextLabel")
+    DescLabel.Size = UDim2.new(1, -20, 0, 50)
+    DescLabel.Position = UDim2.new(0, 10, 0, 40)
+    DescLabel.BackgroundTransparency = 1
+    DescLabel.Text = Description
+    DescLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    DescLabel.Font = Enum.Font.Gotham
+    DescLabel.TextSize = 16
+    DescLabel.TextWrapped = true
+    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DescLabel.TextYAlignment = Enum.TextYAlignment.Top
+    DescLabel.Parent = Frame
+
+    local TweenService = game:GetService("TweenService")
+    local tweenIn = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -175, 0, 50)})
+    tweenIn:Play()
+
+    task.delay(Duration, function()
+        local tweenOut = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -175, 0, -120)})
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            ScreenGui:Destroy()
+        end)
+    end)
+end
+
+return Zerox
