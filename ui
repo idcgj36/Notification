@@ -14,27 +14,70 @@ ScreenGui.Parent = CoreGui
 local Container = Instance.new("Frame")
 Container.Name = "Container"
 Container.AnchorPoint = Vector2.new(1,0)
-Container.Position = UDim2.new(1, -20, 0, 20) -- góc phải trên
-Container.Size = UDim2.new(0, 300, 1, -40)
+Container.Position = UDim2.new(1, -20, 0, 20)
+Container.Size = UDim2.new(0, 260, 1, -40)
 Container.BackgroundTransparency = 1
 Container.Parent = ScreenGui
 
 local UIListLayout = Instance.new("UIListLayout", Container)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.Padding = UDim.new(0, 6)
 
 local Colors = {
-    Success = Color3.fromRGB(46, 204, 113), -- xanh lá
-    Warning = Color3.fromRGB(241, 196, 15), -- vàng
-    Error   = Color3.fromRGB(231, 76, 60),  -- đỏ
-    Info    = Color3.fromRGB(255, 255, 255) -- trắng
+    Success = Color3.fromRGB(46,204,113),
+    Warning = Color3.fromRGB(241,196,15),
+    Error = Color3.fromRGB(231,76,60),
+    Info = Color3.fromRGB(255,255,255)
 }
 
 function Library:SendNotification(Type, Message, Duration)
     Type = Type or "Info"
     Message = Message or "No message"
     Duration = Duration or 3
+    local Color = Colors[Type] or Colors.Info
 
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(1, 0, 0, 36)
+    Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = Container
+
+    local UICorner = Instance.new("UICorner", Frame)
+    UICorner.CornerRadius = UDim.new(0, 5)
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(1, -16, 1, -8)
+    TextLabel.Position = UDim2.new(0, 8, 0, 0)
+    TextLabel.Text = Message
+    TextLabel.Font = Enum.Font.GothamBold
+    TextLabel.TextSize = 14
+    TextLabel.TextColor3 = Color
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TextLabel.Parent = Frame
+
+    local ProgressBar = Instance.new("Frame")
+    ProgressBar.Size = UDim2.new(1, 0, 0, 2)
+    ProgressBar.Position = UDim2.new(0, 0, 1, -2)
+    ProgressBar.BackgroundColor3 = Color
+    ProgressBar.BorderSizePixel = 0
+    ProgressBar.Parent = Frame
+
+    TweenService:Create(ProgressBar, TweenInfo.new(Duration, Enum.EasingStyle.Linear), {
+        Size = UDim2.new(0, 0, 0, 2)
+    }):Play()
+
+    task.delay(Duration, function()
+        TweenService:Create(Frame, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
+            BackgroundTransparency = 1,
+            Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset, Frame.Position.Y.Scale, Frame.Position.Y.Offset - 15)
+        }):Play()
+        task.wait(0.25)
+        Frame:Destroy()
+    end)
+end
+
+return Library
     local Color = Colors[Type] or Colors.Info
 
     local Frame = Instance.new("Frame")
