@@ -1,7 +1,7 @@
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 
-local Notification = {}
+local Fun = {}
 local NotificationsUI = Instance.new("ScreenGui")
 NotificationsUI.Name = "NotificationsUI"
 NotificationsUI.ResetOnSpawn = false
