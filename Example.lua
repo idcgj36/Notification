@@ -3,7 +3,7 @@ local Fun = loadstring(game:HttpGet("https://raw.githubusercontent.com/idcgj36/N
 Fun:Notify({
     Type = "Success",
     Message = "I'm just a message",
-    Duration = 8,
+    Duration = 5,
 })
 
 Fun:Notify({
