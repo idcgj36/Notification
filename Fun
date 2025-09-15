@@ -27,7 +27,7 @@ local Icons = {
     Info    = "rbxassetid://92726475245140"
 }
 
-function Notification:Notify(Properties)
+function Fun:Notify(Properties)
     local Type = Properties.Type or "Info"
     local Message = Properties.Message or "Notification"
     local Duration = Properties.Duration or 3
