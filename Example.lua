@@ -1,4 +1,4 @@
-local Fun = loadstring(game:HttpGet("https://raw.githubusercontent.com/idcgj36/Notification/refs/heads/main/Fun"))()
+local Fun = loadstring(game:HttpGet("https://raw.githubusercontent.com/idcgj36/Notification/refs/heads/main/Sourced.lua"))()
 
 Fun:Notify({
     Type = "Success",
