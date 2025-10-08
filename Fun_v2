@@ -1,0 +1,171 @@
+--[[ 
+📦 Custom Notification UI (Executor/OOP Version)
+Made by ChatGPT
+Usage:
+    local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/<username>/<repo>/main/notify.lua"))()
+    Notification:Show({
+        Title = "Information",
+        Text = "Click here for details",
+        Icon = "rbxassetid://3926305904",
+        OnClicked = function()
+            print("Clicked on notification")
+        end
+    })
+]]
+
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:FindFirstChildOfClass("PlayerGui")
+
+local Notification = {}
+Notification.__index = Notification
+
+-- Theme config
+Notification.Config = {
+    Anchor = "TopRight", -- TopRight, TopLeft, BottomRight, BottomLeft
+    Width = 300,
+    Spacing = 8,
+    Theme = {
+        Background = Color3.fromRGB(25, 25, 25),
+        Text = Color3.fromRGB(235, 235, 235),
+        Accent = Color3.fromRGB(0, 170, 255),
+        Corner = 8
+    }
+}
+
+-- Create GUI container
+function Notification:_getContainer()
+    local gui = playerGui:FindFirstChild("NotificationExecutorUI")
+    if not gui then
+        gui = Instance.new("ScreenGui")
+        gui.Name = "NotificationExecutorUI"
+        gui.IgnoreGuiInset = true
+        gui.ResetOnSpawn = false
+        gui.Parent = playerGui
+    end
+
+    local container = gui:FindFirstChild("Container")
+    if not container then
+        container = Instance.new("Frame")
+        container.Name = "Container"
+        container.BackgroundTransparency = 1
+        container.Size = UDim2.new(0, self.Config.Width, 1, -20)
+        container.Position = UDim2.new(1, -self.Config.Width - 10, 0, 10)
+        container.Parent = gui
+
+        local layout = Instance.new("UIListLayout")
+        layout.Padding = UDim.new(0, self.Config.Spacing)
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+        layout.VerticalAlignment = Enum.VerticalAlignment.Top
+        layout.Parent = container
+    end
+
+    return container
+end
+
+-- Add rounded corner
+local function addCorner(parent, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius)
+    c.Parent = parent
+end
+
+-- Show notification
+function Notification:Show(params)
+    local container = self:_getContainer()
+    local theme = self.Config.Theme
+    local frame = Instance.new("Frame")
+    frame.Name = "Notification"
+    frame.Size = UDim2.new(1, 0, 0, 80)
+    frame.BackgroundColor3 = theme.Background
+    frame.BorderSizePixel = 0
+    frame.ClipsDescendants = true
+    frame.Parent = container
+    addCorner(frame, theme.Corner)
+
+    local accent = Instance.new("Frame")
+    accent.Size = UDim2.new(0, 4, 1, 0)
+    accent.BackgroundColor3 = theme.Accent
+    accent.BorderSizePixel = 0
+    accent.Parent = frame
+
+    local title = Instance.new("TextLabel")
+    title.BackgroundTransparency = 1
+    title.Position = UDim2.new(0, 12, 0, 8)
+    title.Size = UDim2.new(1, -24, 0, 20)
+    title.Font = Enum.Font.SourceSansSemibold
+    title.TextSize = 18
+    title.TextColor3 = theme.Text
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Text = params.Title or "Notification"
+    title.Parent = frame
+
+    local text = Instance.new("TextLabel")
+    text.BackgroundTransparency = 1
+    text.Position = UDim2.new(0, 12, 0, 30)
+    text.Size = UDim2.new(1, -24, 1, -40)
+    text.Font = Enum.Font.SourceSans
+    text.TextSize = 14
+    text.TextColor3 = theme.Text
+    text.TextWrapped = true
+    text.TextXAlignment = Enum.TextXAlignment.Left
+    text.TextYAlignment = Enum.TextYAlignment.Top
+    text.Text = params.Text or ""
+    text.Parent = frame
+
+    -- optional icon
+    if params.Icon then
+        local icon = Instance.new("ImageLabel")
+        icon.Size = UDim2.new(0, 48, 0, 48)
+        icon.Position = UDim2.new(0, -54, 0.5, -24)
+        icon.AnchorPoint = Vector2.new(1, 0)
+        icon.BackgroundTransparency = 1
+        icon.Image = params.Icon
+        icon.Parent = frame
+        addCorner(icon, 6)
+    end
+
+    -- animation in
+    frame.Position = UDim2.new(1, 100, 0, 0)
+    frame.BackgroundTransparency = 1
+    TweenService:Create(frame, TweenInfo.new(0.25), {
+        Position = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 0
+    }):Play()
+
+    -- click detection
+    if params.OnClicked then
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                pcall(params.OnClicked)
+            end
+        end)
+    end
+
+    -- auto remove
+    task.spawn(function()
+        task.wait(params.Duration or 4)
+        local tween = TweenService:Create(frame, TweenInfo.new(0.25), {
+            BackgroundTransparency = 1,
+            Position = UDim2.new(1, 100, 0, 0)
+        })
+        tween:Play()
+        tween.Completed:Wait()
+        frame:Destroy()
+    end)
+
+    return frame
+end
+
+-- Simple toast
+function Notification:Toast(title, text, duration)
+    self:Show({
+        Title = title,
+        Text = text,
+        Duration = duration or 3
+    })
+end
+
+return setmetatable({}, Notification)
